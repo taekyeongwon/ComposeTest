@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
@@ -28,14 +30,47 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Log.d("test", "setContent function" + Thread.currentThread().name)
-            Test()
+            Log.d("test", "setContent function")
+//            Test()
+            ClickTest()
         }
     }
 }
 
 @Composable
-fun Test() {
+fun ClickTest() {
+    var test by remember {
+        mutableStateOf(0)
+    }
+    var test2 by remember {
+        mutableStateOf(0)
+    }
+    Log.d("test", "ClickTest recomposition")
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Log.d("test", "Box recomposition")
+        Button(onClick = {
+            test++
+        }) {
+            Log.d("test", "Button recomposition")
+            Greeting("Android $test")
+        }
+        CustomColumn(
+            0,
+            modifier = Modifier
+                .clickable {
+                    test2++
+                }
+                .align(Alignment.CenterEnd)
+        ) {
+            Log.d("test", "Column function")
+            Greeting("Android $test2")
+        }
+    }
+}
+
+@Composable
+fun Test() {    //Test 전체 리컴포지션, 하위 컴포저블은 상태 안변하면 스킵
     Box(modifier = Modifier.fillMaxWidth()) {
         var test by remember {
             mutableStateOf(0)
@@ -54,9 +89,11 @@ fun Test() {
         CustomButton(test) {
             test++
         }
-        CustomColumn(
+        CustomColumn2(
             test2,
-            modifier = modifier.value
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .clickable { test2++ }
         )
     }.also {
         Log.d("test", "Box scope")
@@ -74,7 +111,16 @@ fun CustomButton(test: Int, onClick: () -> Unit) {
 }
 
 @Composable
-fun CustomColumn(test2: Int, modifier: Modifier) {
+inline fun CustomColumn(test2: Int, modifier: Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(modifier = modifier) {
+        content()
+    }.also {
+        Log.d("test", "Column scope")
+    }
+}
+
+@Composable
+fun CustomColumn2(test2: Int, modifier: Modifier) {
     Column(modifier = modifier) {
         Log.d("test", "Column function")
         Greeting("Android $test2")
