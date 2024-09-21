@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -53,18 +56,34 @@ fun ClickTest() {
             test++
         }) {
             Log.d("test", "Button recomposition")
-            Greeting("Android $test")
+            Greeting(
+                { test.toString() }
+            )
         }
-        CustomColumn(
-            0,
-            modifier = Modifier
-                .clickable {
-                    test2++
-                }
-                .align(Alignment.CenterEnd)
-        ) {
+//        CustomColumn(
+//            0,
+//            modifier = Modifier
+//                .clickable {
+//                    test2++
+//                }
+//                .align(Alignment.CenterEnd)
+//
+//        ){
+//            Log.d("test", "Column function2")
+//            test2.toString()
+//        }
+        Column(modifier = Modifier
+            .clickable {
+                test2++
+            }
+            .align(Alignment.CenterEnd)) {
             Log.d("test", "Column function")
-            Greeting("Android $test2")
+            Greeting(
+                { test.toString() }
+            )
+            Greeting(
+                { test2.toString() }
+            )
         }
     }
 }
@@ -104,16 +123,18 @@ fun Test() {    //Test 전체 리컴포지션, 하위 컴포저블은 상태 안
 fun CustomButton(test: Int, onClick: () -> Unit) {
     Button(onClick = onClick) {
         Log.d("test", "Button function")
-        Greeting("Android $test")
+//        Greeting("Android $test")
     }.also {
         Log.d("test", "Button scope")
     }
 }
 
 @Composable
-inline fun CustomColumn(test2: Int, modifier: Modifier, content: @Composable ColumnScope.() -> Unit) {
+fun CustomColumn(test2: Int, modifier: Modifier, content: () -> String) { //이렇게 컴포저블 떼고 람다로만
     Column(modifier = modifier) {
-        content()
+        Greeting(content)   //Greeting도 람다로 넘기면 CustomColumn은 리컴포지션 대상이 아님.
+        // 그냥 String매개변수로 받는다면 CustomColumn까지 리컴포지션 대상이라 아래 Greeting은 skip됨.
+        Greeting({ "asdf" })
     }.also {
         Log.d("test", "Column scope")
     }
@@ -123,17 +144,17 @@ inline fun CustomColumn(test2: Int, modifier: Modifier, content: @Composable Col
 fun CustomColumn2(test2: Int, modifier: Modifier) {
     Column(modifier = modifier) {
         Log.d("test", "Column function")
-        Greeting("Android $test2")
+//        Greeting("Android $test2")
     }.also {
         Log.d("test", "Column scope")
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(name: () -> String, modifier: Modifier = Modifier) {
     Log.d("test", "greeting function")
     Text(
-        text = "Hello $name!",
+        text = "Hello ${name()}!",
         modifier = modifier
     ).also {
         Log.d("test", "text scope")
@@ -144,6 +165,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     ComposeTestTheme {
-        Greeting("Android")
+//        Greeting("Android")
     }
 }
