@@ -1,5 +1,6 @@
 package com.tkw.composetest
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.tkw.composetest.ui.theme.ComposeTestTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,12 +38,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             Log.d("test", "setContent function")
 //            Test()
-            ClickTest()
+//            ClickTest()
+            Button(onClick = {
+                val intent = Intent(this, SubActivity::class.java)
+                startActivity(intent)
+            }) {
+
+            }
         }
     }
 }
 
 @Composable
+@Preview
 fun ClickTest() {
     var test by remember {
         mutableStateOf(0)
@@ -153,12 +163,15 @@ fun CustomColumn2(test2: Int, modifier: Modifier) {
 @Composable
 fun Greeting(name: () -> String, modifier: Modifier = Modifier) {
     Log.d("test", "greeting function")
-    Text(
-        text = "Hello ${name()}!",
-        modifier = modifier
-    ).also {
-        Log.d("test", "text scope")
+    Surface(color = MaterialTheme.colorScheme.primary) {
+        Text(
+            text = "Hello ${name()}!",
+            modifier = modifier.padding(24.dp)
+        ).also {
+            Log.d("test", "text scope")
+        }
     }
+
 }
 
 @Preview(showBackground = true, name = "#1")
