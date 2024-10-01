@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.github.takahirom.decomposer")
+//    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 
 android {
@@ -41,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
     packaging {
         resources {
@@ -49,6 +50,12 @@ android {
         }
     }
 }
+
+//composeCompiler {
+//    enableStrongSkippingMode = true
+//    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+//    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+//}
 
 dependencies {
 
@@ -68,4 +75,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 }

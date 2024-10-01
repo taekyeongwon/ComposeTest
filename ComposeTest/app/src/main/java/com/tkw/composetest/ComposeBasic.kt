@@ -3,6 +3,7 @@ package com.tkw.composetest
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
@@ -41,6 +42,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tkw.composetest.ui.theme.ComposeTestTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 class SubActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,22 +73,23 @@ fun MyApp(modifier: Modifier = Modifier) {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
+    var expanded by rememberSaveable {
+        mutableStateOf(false)
+    }
+    Log.d("test", "Greeting")
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary
         ),
         modifier = modifier.padding(vertical = 4.dp, horizontal = 8.dp)
     ) {
-        CardContent(name)
+        Log.d("test", "Card $name")
+        CardContent(name, expanded) { expanded = !expanded }
     }
 }
 
 @Composable
-private fun CardContent(name: String) {
-    var expanded by rememberSaveable {
-        mutableStateOf(false)
-    }
-
+private fun CardContent(name: String, expanded: Boolean, buttonClicked: () -> Unit) {
     Row(
         modifier = Modifier
             .padding(12.dp)
@@ -101,16 +105,14 @@ private fun CardContent(name: String) {
             .padding(12.dp)
         ) {
             Text(text = "Hello, ")
-            Text(text = name, style = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.ExtraBold
-            ))
+            Text(text = name)
             if (expanded) {
                 Text(text = ("Composem ipsum color sit lazy, " +
                         "padding theme elit, sed do bouncy. ").repeat(4)
                 )
             }
         }
-        IconButton(onClick = { expanded = !expanded }) {
+        IconButton(onClick = buttonClicked) {
             Icon(
                 imageVector = if(expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                 contentDescription = if (expanded) {
@@ -129,7 +131,9 @@ private fun Greetings(
     names: List<String> = List(1000) { "$it" }
 ) {
     LazyColumn(modifier = modifier.padding(vertical = 4.dp)) {
+        Log.d("test", "LazyColumn")
         items(items = names) { name ->
+            Log.d("test", name.hashCode().toString())
             Greeting(name = name)
         }
     }
